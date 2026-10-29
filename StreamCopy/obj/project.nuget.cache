@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "0oC0dYdRdwU=",
+  "success": true,
+  "projectFilePath": "E:\\SMF\\StreamCopy\\StreamCopy\\StreamCopy.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\tirth\\.nuget\\packages\\devexpress.data\\26.1.6\\devexpress.data.26.1.6.nupkg.sha512",
+    "C:\\Users\\tirth\\.nuget\\packages\\devextreme.aspnet.core\\26.1.6\\devextreme.aspnet.core.26.1.6.nupkg.sha512",
+    "C:\\Users\\tirth\\.nuget\\packages\\devextreme.aspnet.data\\5.1.0\\devextreme.aspnet.data.5.1.0.nupkg.sha512",
+    "C:\\Users\\tirth\\.nuget\\packages\\microsoft.win32.systemevents\\8.0.0\\microsoft.win32.systemevents.8.0.0.nupkg.sha512",
+    "C:\\Users\\tirth\\.nuget\\packages\\system.drawing.common\\8.0.15\\system.drawing.common.8.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}

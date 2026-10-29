@@ -1,0 +1,284 @@
+﻿@page
+@using DevExtreme.AspNet.Mvc
+@model IndexModel
+@{
+    ViewData["Title"] = "StreamCopy Manager";
+}
+
+<div class="container py-4" style="max-width: 650px;">
+    <h2 class="mb-4">File Stream Copy Manager</h2>
+
+    
+    <div class="mb-3">
+        <label class="form-label fw-bold">Select File:</label>
+        @(Html.DevExtreme().FileUploader()
+            .ID("fileSelector")
+            .Name("file")
+            .Multiple(false)
+            .UploadMode(FileUploadMode.UseForm)
+            .SelectButtonText("Browse File")
+            .LabelText("")
+            .ShowFileList(false)
+            .OnValueChanged("onFileSelectionChanged")
+        )
+
+        <div id="selectedFileCard" class="card p-2 mt-2 border d-none align-items-center justify-content-between flex-row bg-light">
+            <div class="d-flex align-items-center gap-2">
+                <i class="dx-icon dx-icon-doc fs-4 text-primary"></i>
+                <div>
+                    <div id="selectedFileName" class="fw-bold text-dark"></div>
+                    <small id="selectedFileSize" class="text-muted"></small>
+                </div>
+            </div>
+            @(Html.DevExtreme().Button()
+                .ID("btnClearFile")
+                .Icon("trash")
+                .Type(ButtonType.Danger)
+                .StylingMode(ButtonStylingMode.Text)
+                .Hint("Remove selected file")
+                .OnClick("clearSelectedFile")
+            )
+        </div>
+    </div>
+
+   
+    <div class="mb-3">
+        <label class="form-label fw-bold">Destination Folder:</label>
+        @(Html.DevExtreme().TextBox()
+            .ID("txtDestination")
+            .Placeholder(@"C:\Users\YourUser\Desktop\test")
+            .StylingMode(EditorStylingMode.Outlined)
+        )
+    </div>
+
+   
+    <div class="d-flex gap-2 mb-4">
+        @(Html.DevExtreme().Button()
+            .ID("btnCopy")
+            .Text("Copy")
+            .Type(ButtonType.Default)
+            .StylingMode(ButtonStylingMode.Contained)
+            .Icon("copy")
+            .OnClick("startCopy")
+        )
+
+        @(Html.DevExtreme().Button()
+            .ID("btnPause")
+            .Text("Pause")
+            .Type(ButtonType.Normal)
+            .StylingMode(ButtonStylingMode.Contained)
+            .Icon("media-pause")
+            .Disabled(true)
+            .OnClick("pauseCopy")
+        )
+
+        @(Html.DevExtreme().Button()
+            .ID("btnResume")
+            .Text("Resume")
+            .Type(ButtonType.Success)
+            .StylingMode(ButtonStylingMode.Contained)
+            .Icon("media-play")
+            .Disabled(true)
+            .OnClick("resumeCopy")
+        )
+
+        @(Html.DevExtreme().Button()
+            .ID("btnCancel")
+            .Text("Cancel")
+            .Type(ButtonType.Danger)
+            .StylingMode(ButtonStylingMode.Contained)
+            .Icon("close")
+            .Disabled(true)
+            .OnClick("cancelCopy")
+        )
+    </div>
+
+    <!-- Progress Bar (Only Process Shown) -->
+    <div class="mb-3">
+        @(Html.DevExtreme().ProgressBar()
+            .ID("copyProgressBar")
+            .Min(0)
+            .Max(100)
+            .Value(0)
+            .StatusFormat(new JS("function(value) { return Math.round(value * 100) + '%'; }"))
+        )
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let pollTimer = null;
+
+        function getWidget(id, type) {
+            return $(id)[type]("instance");
+        }
+
+        // 1. Reset everything to 0% and fresh state when a new file is picked
+        function onFileSelectionChanged(e) {
+            const files = e.value;
+            const card = document.getElementById("selectedFileCard");
+
+            // Reset progress bar back to 0%
+            getWidget("#copyProgressBar", "dxProgressBar").option("value", 0);
+
+            // Reset action buttons to ready state
+            getWidget("#btnCopy", "dxButton").option("disabled", false);
+            getWidget("#btnPause", "dxButton").option("disabled", true);
+            getWidget("#btnResume", "dxButton").option("disabled", true);
+            getWidget("#btnCancel", "dxButton").option("disabled", true);
+
+            if (files && files.length > 0) {
+                const file = files[0];
+                document.getElementById("selectedFileName").innerText = file.name;
+                document.getElementById("selectedFileSize").innerText = formatBytes(file.size);
+                card.classList.remove("d-none");
+            } else {
+                card.classList.add("d-none");
+            }
+        }
+
+        function clearSelectedFile() {
+            const uploader = getWidget("#fileSelector", "dxFileUploader");
+            uploader.reset();
+            document.getElementById("selectedFileCard").classList.add("d-none");
+            getWidget("#copyProgressBar", "dxProgressBar").option("value", 0);
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        async function startCopy() {
+            const uploader = getWidget("#fileSelector", "dxFileUploader");
+            const files = uploader.option("value");
+            const destination = getWidget("#txtDestination", "dxTextBox").option("value");
+
+            if (!files || files.length === 0) {
+                DevExpress.ui.notify("Please select a file to copy.", "warning", 2500);
+                return;
+            }
+
+            if (!destination) {
+                DevExpress.ui.notify("Please specify the destination directory.", "warning", 2500);
+                return;
+            }
+
+            // Reset progress bar to 0 before starting transfer
+            getWidget("#copyProgressBar", "dxProgressBar").option("value", 0);
+
+            const formData = new FormData();
+            formData.append("file", files[0]);
+            formData.append("destination", destination);
+
+            // Immediately set active button states
+            getWidget("#btnCopy", "dxButton").option("disabled", true);
+            getWidget("#btnPause", "dxButton").option("disabled", false);
+            getWidget("#btnResume", "dxButton").option("disabled", true);
+            getWidget("#btnCancel", "dxButton").option("disabled", false);
+
+            // Start status polling immediately
+            startPolling();
+
+            try {
+                const res = await fetch("/api/copy/upload-and-copy", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.message === "Transfer finished.") {
+                        getWidget("#copyProgressBar", "dxProgressBar").option("value", 100);
+                        DevExpress.ui.notify("Copy completed successfully!", "success", 3000);
+                    }
+                } else {
+                    DevExpress.ui.notify(await res.text(), "error", 3500);
+                }
+            } catch (err) {
+                DevExpress.ui.notify("Error: " + err, "error", 3000);
+            } finally {
+                stopPolling();
+            }
+        }
+
+        async function pauseCopy() {
+            getWidget("#btnPause", "dxButton").option("disabled", true);
+            await fetch("/api/copy/pause", { method: "POST" });
+            getWidget("#btnResume", "dxButton").option("disabled", false);
+            getWidget("#btnCancel", "dxButton").option("disabled", false);
+        }
+
+        async function resumeCopy() {
+            getWidget("#btnResume", "dxButton").option("disabled", true);
+            await fetch("/api/copy/resume", { method: "POST" });
+            getWidget("#btnPause", "dxButton").option("disabled", false);
+            getWidget("#btnCancel", "dxButton").option("disabled", false);
+        }
+
+        async function cancelCopy() {
+            // Disable buttons immediately so multiple clicks are prevented
+            getWidget("#btnCancel", "dxButton").option("disabled", true);
+            getWidget("#btnPause", "dxButton").option("disabled", true);
+            getWidget("#btnResume", "dxButton").option("disabled", true);
+
+            try {
+                await fetch("/api/copy/cancel", { method: "POST" });
+                // Reset the progress bar back to 0%
+                getWidget("#copyProgressBar", "dxProgressBar").option("value", 0);
+
+                // Display the success message
+                DevExpress.ui.notify("File cancelled successfully.", "success", 3000);
+            } catch (err) {
+                DevExpress.ui.notify("Error cancelling file: " + err, "error", 3000);
+            } finally {
+                stopPolling();
+            }
+        }
+
+        function startPolling() {
+            if (pollTimer) clearInterval(pollTimer);
+
+            pollTimer = setInterval(async () => {
+                try {
+                    const res = await fetch("/api/copy/status");
+                    const data = await res.json();
+
+                    getWidget("#copyProgressBar", "dxProgressBar").option("value", data.progressPercentage);
+
+                    if (data.isBusy) {
+                        getWidget("#btnCopy", "dxButton").option("disabled", true);
+                        getWidget("#btnCancel", "dxButton").option("disabled", false);
+
+                        if (data.isPaused) {
+                            getWidget("#btnPause", "dxButton").option("disabled", true);
+                            getWidget("#btnResume", "dxButton").option("disabled", false);
+                        } else {
+                            getWidget("#btnPause", "dxButton").option("disabled", false);
+                            getWidget("#btnResume", "dxButton").option("disabled", true);
+                        }
+                    } else if (data.progressPercentage === 100) {
+                        stopPolling();
+                    }
+                } catch (e) {
+                  
+                }
+            }, 250);
+        }
+
+        function stopPolling() {
+            if (pollTimer) {
+                clearInterval(pollTimer);
+                pollTimer = null;
+            }
+
+            getWidget("#btnCopy", "dxButton").option("disabled", false);
+            getWidget("#btnPause", "dxButton").option("disabled", true);
+            getWidget("#btnResume", "dxButton").option("disabled", true);
+            getWidget("#btnCancel", "dxButton").option("disabled", true);
+        }
+    </script>
+}

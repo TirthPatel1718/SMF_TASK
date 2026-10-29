@@ -1,0 +1,119 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "StreamCopy/1.0.0": {
+        "dependencies": {
+          "DevExtreme.AspNet.Core": "26.1.6"
+        },
+        "runtime": {
+          "StreamCopy.dll": {}
+        }
+      },
+      "DevExpress.Data/26.1.6": {
+        "dependencies": {
+          "System.Drawing.Common": "8.0.15"
+        },
+        "runtime": {
+          "lib/net8.0/DevExpress.Data.v26.1.dll": {
+            "assemblyVersion": "26.1.6.0",
+            "fileVersion": "26.1.6.0"
+          }
+        }
+      },
+      "DevExtreme.AspNet.Core/26.1.6": {
+        "dependencies": {
+          "DevExpress.Data": "26.1.6",
+          "DevExtreme.AspNet.Data": "5.1.0"
+        },
+        "runtime": {
+          "lib/net8.0/DevExtreme.AspNet.Core.dll": {
+            "assemblyVersion": "26.1.6.0",
+            "fileVersion": "26.1.6.0"
+          }
+        }
+      },
+      "DevExtreme.AspNet.Data/5.1.0": {
+        "runtime": {
+          "lib/net8.0/DevExtreme.AspNet.Data.dll": {
+            "assemblyVersion": "5.1.0.0",
+            "fileVersion": "5.1.0.0"
+          }
+        }
+      },
+      "Microsoft.Win32.SystemEvents/8.0.0": {
+        "runtime": {
+          "lib/net8.0/Microsoft.Win32.SystemEvents.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net8.0/Microsoft.Win32.SystemEvents.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "System.Drawing.Common/8.0.15": {
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/System.Drawing.Common.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.1525.16501"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "StreamCopy/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DevExpress.Data/26.1.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+ShgJxeM4aW8Dwjzr+7q5CO2jTUE0KNLYUnddmNZ6g2cUjRr/nxhJiHH6F5aWTOIglY9PSWsNE9uknAuVbz3Aw==",
+      "path": "devexpress.data/26.1.6",
+      "hashPath": "devexpress.data.26.1.6.nupkg.sha512"
+    },
+    "DevExtreme.AspNet.Core/26.1.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+jEtmbBFkB/sNnL16PFtFrgb5/83VDpyK/EuZD5EeZdvgEbf77kqfjpp/90siL8vOkBKhjoH4mqGur4vA8mNDQ==",
+      "path": "devextreme.aspnet.core/26.1.6",
+      "hashPath": "devextreme.aspnet.core.26.1.6.nupkg.sha512"
+    },
+    "DevExtreme.AspNet.Data/5.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cxDBKbBLt80sCnsBDHZjLNu6mmhDDFj2oyAdUpUQzaxndvMittkUPj63lFKIBtv2E+issteiO1F1UztZ5Boh6w==",
+      "path": "devextreme.aspnet.data/5.1.0",
+      "hashPath": "devextreme.aspnet.data.5.1.0.nupkg.sha512"
+    },
+    "Microsoft.Win32.SystemEvents/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9opKRyOKMCi2xJ7Bj7kxtZ1r9vbzosMvRrdEhVhDz8j8MoBGgB+WmC94yH839NPH+BclAjtQ/pyagvi/8gDLkw==",
+      "path": "microsoft.win32.systemevents/8.0.0",
+      "hashPath": "microsoft.win32.systemevents.8.0.0.nupkg.sha512"
+    },
+    "System.Drawing.Common/8.0.15": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qe9ADU4LlSDEluFw6UCvnhUX43iu1rfIi4u3cpQ37DjFDbwyWGRrDM5gypYj1IQuAVRnMHqOyFbCjtCvijN2cA==",
+      "path": "system.drawing.common/8.0.15",
+      "hashPath": "system.drawing.common.8.0.15.nupkg.sha512"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+[
+  {
+    "ContainingType": "StreamCopy.Controllers.FileCopyController",
+    "Method": "Cancel",
+    "RelativePath": "api/copy/cancel",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StreamCopy.Controllers.FileCopyController",
+    "Method": "Pause",
+    "RelativePath": "api/copy/pause",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StreamCopy.Controllers.FileCopyController",
+    "Method": "Resume",
+    "RelativePath": "api/copy/resume",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StreamCopy.Controllers.FileCopyController",
+    "Method": "GetStatus",
+    "RelativePath": "api/copy/status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "StreamCopy.Controllers.FileCopyController",
+    "Method": "UploadAndCopy",
+    "RelativePath": "api/copy/upload-and-copy",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "destination",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
